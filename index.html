@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon-precomposed" href="icon.png">
 <link rel="shortcut icon" href="icon.png">
 <meta name="msapplication-TileImage" content="icon.png">
-
+ 
 <title>Summit</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -147,13 +147,13 @@ select:focus { outline:none; border-color:var(--ac); }
 .bar-seg-send { background:var(--gn); }
 .bar-seg-fall { background:#e88080; }
 .bar-seg-lbl { font-size:9px; font-weight:700; color:white; }
-
+ 
 .home-header { position:relative; display:flex; align-items:center; justify-content:space-between; padding:calc(var(--st) + 8px) 12px 12px 20px; background:var(--sf); border-bottom:1px solid var(--bd); overflow:hidden; }
 .home-mountain { flex-shrink:0; width:52px; height:52px; border-radius:10px; overflow:hidden; opacity:0.95; }
-
+ 
 .save-preset-btn { background:var(--bl); color:white; border:none; border-radius:var(--r); font-size:14px; font-weight:600; font-family:var(--fn); padding:12px; width:100%; cursor:pointer; margin-top:8px; }
 .save-preset-btn:active { opacity:.85; }
-
+ 
 .ep-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
 .ep-tab { padding:8px 12px; border-radius:var(--rs); border:1.5px solid var(--bd); background:var(--sf); font-size:13px; font-weight:600; font-family:var(--fn); color:var(--t2); cursor:pointer; }
 .ep-tab.on { background:var(--ac); color:white; border-color:var(--ac); }
@@ -167,7 +167,7 @@ select:focus { outline:none; border-color:var(--ac); }
 </style>
 </head>
 <body>
-
+ 
 <div class="scr on" id="scr-home">
   <div class="home-header">
     <div><div class="tt">Summit</div><div class="ts" id="hdate"></div></div>
@@ -187,14 +187,14 @@ select:focus { outline:none; border-color:var(--ac); }
     <div id="hrecent"></div>
   </div>
 </div>
-
+ 
 <div class="scr" id="scr-log"><div class="tb"><div class="tt">History</div></div><div class="sc" id="log-sc"></div></div>
 <div class="scr" id="scr-progress"><div class="tb"><div class="tt">Progress</div></div><div class="sc" id="prog-sc"></div></div>
 <div class="scr" id="scr-climbing"><div class="tb"><div class="tt">Climbing Tracker</div></div><div class="sc" id="climb-sc"></div></div>
 <div class="scr" id="scr-settings"><div class="tb"><div class="tt">Settings</div></div><div class="sc" id="sett-sc"></div></div>
 <div class="scr" id="scr-editpresets"><div class="tb" id="ep-topbar"></div><div class="sc" id="ep-sc"></div></div>
 <div class="scr" id="scr-workout"><div class="tb" id="wtb"></div><div class="sc" id="wsc"></div></div>
-
+ 
 <div class="tbar">
   <div class="ti on" id="tab-home" onclick="showTab('home')"><div class="tic">🏠</div><span>Home</span></div>
   <div class="ti" id="tab-log" onclick="showTab('log')"><div class="tic">📋</div><span>Log</span></div>
@@ -202,25 +202,25 @@ select:focus { outline:none; border-color:var(--ac); }
   <div class="ti" id="tab-climbing" onclick="showTab('climbing')"><div class="tic">🧗</div><span>Climbing</span></div>
   <div class="ti" id="tab-settings" onclick="showTab('settings')"><div class="tic">⚙️</div><span>Settings</span></div>
 </div>
-
+ 
 <div class="ov" id="m-ex"><div class="sh2"><div class="shdl"></div><div class="sht">Add Exercise</div>
   <input class="tin" id="nex-n" placeholder="Exercise name">
   <select id="nex-s"><option value="2">2 sets</option><option value="3" selected>3 sets</option><option value="4">4 sets</option><option value="5">5 sets</option></select>
   <button class="bp" onclick="doAddEx()">Add Exercise</button><button class="bs" onclick="closeModal('m-ex')">Cancel</button>
 </div></div>
-
+ 
 <div class="ov" id="m-rt"><div class="sh2"><div class="shdl"></div><div class="sht">Add Route</div>
   <input class="tin" id="nrt-n" placeholder="Route name (optional)">
   <select id="nrt-g"><option>5.7</option><option>5.8</option><option>5.9</option><option selected>5.10a</option><option>5.10b</option><option>5.10c</option><option>5.10d</option><option>5.11a</option><option>5.11b</option><option>5.11c</option><option>5.11d</option><option>5.12a</option><option>5.12b</option><option>5.12c</option><option>5.12d</option><option>V0</option><option>V1</option><option>V2</option><option>V3</option><option>V4</option><option>V5</option><option>V6</option><option>V7</option></select>
   <button class="bp" onclick="doAddRt()">Add Route</button><button class="bs" onclick="closeModal('m-rt')">Cancel</button>
 </div></div>
-
+ 
 <div class="ov" id="m-st"><div class="sh2"><div class="shdl"></div><div class="sht">Add Stretch</div>
   <input class="tin" id="nst-n" placeholder="Stretch name">
   <select id="nst-h"><option value="20">20 sec</option><option value="30" selected>30 sec</option><option value="45">45 sec</option><option value="60">60 sec</option><option value="90">90 sec</option></select>
   <button class="bp" onclick="doAddSt()">Add Stretch</button><button class="bs" onclick="closeModal('m-st')">Cancel</button>
 </div></div>
-
+ 
 <div class="ov" id="m-hg"><div class="sh2"><div class="shdl"></div><div class="sht">Add Hang Exercise</div>
   <input class="tin" id="nhg-n" placeholder="e.g. Half crimp, Open hand, Pinch">
   <select id="nhg-h"><option value="5">5s hang</option><option value="7" selected>7s hang</option><option value="10">10s hang</option><option value="12">12s hang</option><option value="15">15s hang</option><option value="20">20s hang</option></select>
@@ -228,14 +228,14 @@ select:focus { outline:none; border-color:var(--ac); }
   <select id="nhg-s"><option value="3">3 sets</option><option value="4">4 sets</option><option value="5" selected>5 sets</option><option value="6">6 sets</option><option value="8">8 sets</option></select>
   <button class="bp" onclick="doAddHg()">Add Exercise</button><button class="bs" onclick="closeModal('m-hg')">Cancel</button>
 </div></div>
-
+ 
 <div class="ov" id="m-imp"><div class="sh2"><div class="shdl"></div><div class="sht">Import Backup</div>
   <p style="font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.5">Paste the contents of your backup .json file. New workouts will be merged.</p>
   <textarea class="nta" id="imp-json" placeholder="Paste backup JSON here..." style="min-height:120px;font-family:var(--mn);font-size:12px"></textarea>
   <button class="bp" style="margin-top:10px" onclick="doImp()">Import Data</button>
   <button class="bs" onclick="closeModal('m-imp')">Cancel</button>
 </div></div>
-
+ 
 <script>
 // ===== CONSTANTS
 var GRADE_ORDER = ['5.7','5.8','5.9','5.10a','5.10b','5.10c','5.10d','5.11a','5.11b','5.11c','5.11d','5.12a','5.12b','5.12c','5.12d','V0','V1','V2','V3','V4','V5','V6','V7'];
@@ -244,7 +244,7 @@ GRADE_ORDER.forEach(function(g,i){ GRADE_NUM[g]=i; });
 var TC = {run:'#e07830',climb:'#5a8a3d',strength:'#3d6a9a',stretch:'#8a3d7a',basketball:'#c45a1a',fingerboard:'#7a5a3d'};
 var TL = {run:'Walk / Run',climb:'Indoor Climbing',strength:'Strength',stretch:'Stretching',basketball:'Basketball',fingerboard:'Fingerboard'};
 var GC = {'5.7':'#7ab87a','5.8':'#6aaa6a','5.9':'#5a9c5a','5.10a':'#e0a050','5.10b':'#d49040','5.10c':'#c88030','5.10d':'#bc7020','5.11a':'#e07070','5.11b':'#d46060','5.11c':'#c85050','5.11d':'#bc4040','5.12a':'#9060c0','5.12b':'#8050b0','5.12c':'#7040a0','5.12d':'#603090','V0':'#7ab87a','V1':'#6aaa6a','V2':'#e0a050','V3':'#d09040','V4':'#e07070','V5':'#c85050','V6':'#9060c0','V7':'#7040a0'};
-
+ 
 // ===== DEFAULT DATA
 var DEF_PRESETS = {
   A:[{id:'bench',name:'Bench Press'},{id:'ohp',name:'Shoulder Press'},{id:'tri',name:'Tricep Pushdown'},{id:'curl',name:'Bicep Curl'}],
@@ -266,7 +266,7 @@ var DEF_HG = [
   {id:'pinch',name:'Pinch',holdSecs:10,restSecs:5,sets:5},
   {id:'sloper',name:'Sloper',holdSecs:7,restSecs:3,sets:5}
 ];
-
+ 
 function freshData() {
   return {
     presets:{
@@ -303,17 +303,17 @@ function loadData() {
   } catch(e){ return freshData(); }
 }
 function saveData(){ try{ localStorage.setItem('exercise_tracker',JSON.stringify(D)); }catch(e){} }
-
+ 
 var D=loadData();
 var AW=null;
 var climbFilter='today';
-
+ 
 function el(id){ return document.getElementById(id); }
 function fmtDate(ts){ var d=Math.floor((Date.now()-ts)/86400000); return d===0?'Today':d===1?'Yesterday':new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
 function fmtFull(ts){ return new Date(ts).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
 function closeModal(id){ el(id).classList.remove('op'); }
 function isToday(ts){ var d=new Date(ts),n=new Date(); return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate(); }
-
+ 
 // ===== DUMMY DATA
 function loadDummyData(){
   var now=Date.now(), day=86400000;
@@ -369,7 +369,7 @@ function loadDummyData(){
   D.workouts=dummies;
   saveData();
 }
-
+ 
 // ===== NAV
 function showTab(t){
   document.querySelectorAll('.scr').forEach(function(s){ s.classList.remove('on'); });
@@ -388,7 +388,7 @@ function goBack(t){
   if(t==='home') renderHome();
   if(t==='workout') renderAW();
 }
-
+ 
 // ===== HOME
 function renderHome(){
   el('hdate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
@@ -396,7 +396,7 @@ function renderHome(){
   if(!recent.length){ div.innerHTML='<div class="emp"><div class="eic">🏁</div><div class="etx">No workouts yet</div><div class="esb">Tap a workout type above to get started</div></div>'; return; }
   div.innerHTML='<div class="cd">'+recent.map(function(w){ return '<div class="hr"><div class="hd" style="background:'+(TC[w.type]||'#999')+'"></div><div style="flex:1"><div style="font-size:14px;font-weight:500">'+w.label+'</div><div style="font-size:12px;color:var(--t3);margin-top:2px">'+w.summary+'</div></div><div style="font-size:12px;color:var(--t3)">'+fmtDate(w.ts)+'</div></div>'; }).join('')+'</div>';
 }
-
+ 
 // ===== START WORKOUT
 function startW(type){
   AW={type:type,ts:Date.now(),notes:''};
@@ -423,7 +423,7 @@ function renderAW(){
   else if(AW.type==='basketball') renderBball(c);
   else if(AW.type==='fingerboard') renderFb(c);
 }
-
+ 
 // ===== STRENGTH
 function renderStrength(c){
   var p=AW.presetUsed;
@@ -491,7 +491,7 @@ function getLastEx(exId){
   }
   return null;
 }
-
+ 
 // ===== RUN
 function renderRun(c){
   var trows=['Walk','Run','Walk/Run Mix'].map(function(t){ return '<div class="wr" onclick="setRunType(\''+t+'\')" style="'+(AW.runType===t?'background:var(--al)':'')+'">'+'<div style="flex:1;font-size:15px;font-weight:500">'+t+'</div>'+(AW.runType===t?'<span style="color:var(--ac)">&#10003;</span>':'')+'</div>'; }).join('');
@@ -505,7 +505,7 @@ function renderRun(c){
     +'<div style="margin-top:12px"><button class="bp" onclick="finW()">Finish Workout</button></div>';
 }
 function setRunType(t){ AW.runType=t; renderRun(el('wsc')); }
-
+ 
 // ===== CLIMB
 function renderClimb(c){
   var routes=AW.routes||[];
@@ -536,7 +536,7 @@ function delRoute(i){
   renderClimb(el('wsc'));
 }
 function doAddRt(){ var n=el('nrt-n').value.trim(),g=el('nrt-g').value; if(!AW.routes) AW.routes=[]; AW.routes.push({name:n,grade:g}); closeModal('m-rt'); el('nrt-n').value=''; renderClimb(el('wsc')); }
-
+ 
 // ===== STRETCH
 function renderStretch(c){
   var p=AW.stretchPreset||(AW.stretchPreset=D.activeStretchPreset||'A');
@@ -601,7 +601,7 @@ function renderBball(c){
     +'<div style="margin-top:12px"><button class="bp" onclick="finW()">Finish Workout</button></div>';
 }
 function setBballType(t){ AW.bball.gameType=t; renderBball(el('wsc')); }
-
+ 
 // ===== FINGERBOARD
 function renderFb(c){
   var rows=D.hangs.map(function(h,hi){
@@ -647,7 +647,7 @@ function saveFbPreset(){
   saveData(); alert('Fingerboard exercises saved!');
 }
 function doAddHg(){ var n=el('nhg-n').value.trim(); if(!n) return; D.hangs.push({id:'ch_'+Date.now(),name:n,holdSecs:parseInt(el('nhg-h').value),restSecs:parseInt(el('nhg-r').value),sets:parseInt(el('nhg-s').value)}); saveData(); closeModal('m-hg'); el('nhg-n').value=''; renderFb(el('wsc')); }
-
+ 
 // ===== FINISH / CANCEL
 function cancelW(){ AW=null; showTab('home'); }
 function finW(){
@@ -676,7 +676,7 @@ function finW(){
   var rec2=JSON.parse(JSON.stringify(AW)); rec2.label=lbl; rec2.summary=sum;
   D.workouts.push(rec2); saveData(); AW=null; showTab('home');
 }
-
+ 
 // ===== LOG
 function renderLog(){
   var div=el('log-sc');
@@ -689,7 +689,7 @@ function renderLog(){
   });
   div.innerHTML=html;
 }
-
+ 
 // ===== PROGRESS
 function renderProgress(){
   var div=el('prog-sc'),ws=D.workouts;
@@ -735,12 +735,12 @@ function renderProgress(){
     +'<div class="chart-wrap"><div class="chart-title">Workouts per week (last 8 weeks)</div><div style="display:flex">'+yH+'<div class="bars-area"><div class="bars-row">'+bH+'</div></div></div></div>'
     +sH;
 }
-
+ 
 // ===== CHART HELPERS
 function buildYAxis(labels){
   return '<div class="y-axis" style="height:100px;padding-bottom:20px">'+labels.map(function(v){ return '<div class="y-label">'+v+'</div>'; }).join('')+'</div>';
 }
-
+ 
 // ===== CLIMBING TRACKER
 function getFilteredClimb(){
   var ws=D.workouts.filter(function(w){ return w.type==='climb'; });
@@ -754,7 +754,7 @@ function getFilteredClimb(){
   if(cutoff>0) ws=ws.filter(function(w){ return w.ts>=cutoff; });
   return ws.sort(function(a,b){ return a.ts-b.ts; });
 }
-
+ 
 function renderClimbing(){
   var div=el('climb-sc');
   var allClimb=D.workouts.filter(function(w){ return w.type==='climb'; });
@@ -773,7 +773,7 @@ function renderClimbing(){
     Object.values(w.routeResults||{}).forEach(function(r){ if(r.send) totalSends++; });
   });
   var sendPct=totalRoutes>0?Math.round((totalSends/totalRoutes)*100):0;
-
+ 
   // Grade counts
   var gradeCounts={};
   ws.forEach(function(w){ (w.routes||[]).forEach(function(r){ gradeCounts[r.grade]=(gradeCounts[r.grade]||0)+1; }); });
@@ -785,7 +785,7 @@ function renderClimbing(){
     var showLbl=h>18;
     return '<div class="bar-col"><div class="bar-body" style="height:'+h+'px;background:'+col+'99;border:1px solid '+col+';width:100%;border-radius:3px 3px 0 0">'+(showLbl?'<span class="bar-inner-label" style="color:#222">'+v+'</span>':'')+'</div><div class="bar-lbl">'+g+'</div></div>';
   }).join('');
-
+ 
   // Sends vs falls stacked bars (last 10 sessions)
   var recent=ws.slice(-10);
   var sfMax=Math.max.apply(null,recent.map(function(w){ return (w.routes||[]).length; }).concat([1]));
@@ -804,7 +804,7 @@ function renderClimbing(){
       +'<div class="bar-seg bar-seg-send" style="height:'+sendH+'px;border-radius:3px 3px 0 0">'+(showS?'<span class="bar-seg-lbl">'+sends+'</span>':'')+'</div>'
       +'</div><div class="bar-lbl">'+lbl+'</div></div>';
   }).join('');
-
+ 
   // Grade progression line chart
   var progHtml='';
   var progressPts=ws.map(function(w){
@@ -812,7 +812,7 @@ function renderClimbing(){
     (w.routes||[]).forEach(function(r,i){ var gn=GRADE_NUM[r.grade]; if(gn===undefined) return; if(gn>maxA) maxA=gn; var res=(w.routeResults||{})[i]||{}; if(res.send&&gn>maxS) maxS=gn; });
     return {ts:w.ts,maxA:maxA,maxS:maxS};
   }).filter(function(p){ return p.maxA>=0; });
-
+ 
   if(progressPts.length>1){
     var pts=progressPts.slice(-12);
     var allNums=pts.map(function(p){ return Math.max(p.maxA,Math.max(p.maxS,0)); });
@@ -837,11 +837,11 @@ function renderClimbing(){
       +(sentPath?'<path d="'+sentPath+'" fill="none" stroke="var(--gn)" stroke-width="2.5"/>':'')
       +endDots+'</svg></div></div></div>';
   }
-
+ 
   var legend='<div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px;align-items:center">'
     +'<span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:12px;height:12px;background:var(--gn);border-radius:2px"></span>Sends</span>'
     +'<span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:12px;height:12px;background:#e88080;border-radius:2px"></span>Falls</span></div>';
-
+ 
   div.innerHTML='<div class="sl" style="margin-top:4px">Time range</div>'+togHtml
     +'<div class="sl">Overview</div><div class="sg">'
     +'<div class="scd"><div class="sclb">Sessions</div><div class="scv">'+totalSessions+'</div></div>'
@@ -856,7 +856,7 @@ function renderClimbing(){
     +'<div class="chart-wrap"><div class="chart-title">Routes by grade</div><div style="display:flex">'+gcY+'<div class="bars-area" style="overflow-x:auto"><div class="bars-row" style="min-width:'+(gradeKeys.length*28)+'px">'+gradeBars+'</div></div></div></div>';
 }
 function setClimbFilter(f){ climbFilter=f; renderClimbing(); }
-
+ 
 // ===== SETTINGS
 function renderSettings(){
   var cnt=D.workouts.length,lb=localStorage.getItem('et_bk');
@@ -906,11 +906,11 @@ function doClear(){
     D=freshData(); saveData(); renderSettings(); alert('All data cleared.');
   }
 }
-
+ 
 // ===== EDIT PRESETS SCREEN
 var epMode = 'strength-A'; // current mode
 var epDragIdx = null;
-
+ 
 function goToSettings(){ showTab("settings"); }
 function showEditPresets(){
   document.querySelectorAll('.scr').forEach(function(s){ s.classList.remove('on'); });
@@ -918,22 +918,22 @@ function showEditPresets(){
   epMode = 'strength-A';
   renderEditPresets();
 }
-
+ 
 function renderEditPresets(){
   var topbar = el('ep-topbar');
   topbar.innerHTML = '<button class="bk" onclick="goToSettings()">&#8249; Settings</button><div style="text-align:center"><div style="font-size:15px;font-weight:600">Edit Presets</div></div><div style="width:60px"></div>';
-
+ 
   var sections = [
     {key:'strength-A',lbl:'Strength A'},{key:'strength-B',lbl:'Strength B'},{key:'strength-C',lbl:'Strength C'},
     {key:'stretch-A',lbl:'Stretch A'},{key:'stretch-B',lbl:'Stretch B'},{key:'stretch-C',lbl:'Stretch C'},
     {key:'fingerboard',lbl:'Fingerboard'}
   ];
-
+ 
   var tabsHtml = sections.map(function(s){
     var cls = 'ep-tab' + (epMode===s.key ? ' on' : '');
     return '<button class="' + cls + '" data-mode="' + s.key + '">' + s.lbl + '</button>';
   }).join('');
-
+ 
   var items = getEpItems();
   var rowsHtml = items.map(function(item, i){
     var sub = item.hold
@@ -941,19 +941,19 @@ function renderEditPresets(){
       : item.holdSecs
         ? item.holdSecs + 's on &middot; ' + item.restSecs + 's off &middot; ' + item.sets + ' sets'
         : (item.defaultSets||3) + ' sets';
-    return '<div class="drag-item" id="ditem-' + i + '" draggable="true">'
+    return '<div class="drag-item" id="ditem-' + i + '">'
       + '<div class="drag-handle">&#9776;</div>'
       + '<div style="flex:1"><div class="drag-name">' + item.name + '</div><div class="drag-sub">' + sub + '</div></div>'
       + '<button class="drag-del" data-delidx="' + i + '">&#215;</button>'
       + '</div>';
   }).join('');
-
+ 
   el('ep-sc').innerHTML = '<div class="ep-tabs" id="ep-tab-row">' + tabsHtml + '</div>'
     + '<div class="sl" style="margin-top:0">Drag &#9776; to reorder &nbsp;&middot;&nbsp; &#215; to remove</div>'
     + '<div id="drag-list">' + rowsHtml + '</div>'
     + '<button class="bs" style="margin-top:8px" id="ep-add-btn">+ Add item</button>'
     + '<div style="margin-top:12px"><button class="bp" id="ep-save-btn">&#128190; Save changes</button></div>';
-
+ 
   // Attach events after render
   el('ep-tab-row').addEventListener('click', function(e){
     var btn = e.target.closest('[data-mode]');
@@ -961,23 +961,17 @@ function renderEditPresets(){
   });
   el('ep-add-btn').addEventListener('click', addEpItem);
   el('ep-save-btn').addEventListener('click', saveEpItems);
-
+ 
   var delBtns = el('ep-sc').querySelectorAll('[data-delidx]');
   delBtns.forEach(function(btn){
     btn.addEventListener('click', function(){ delEpItem(parseInt(btn.getAttribute('data-delidx'))); });
   });
-
-  var dragItems = el('ep-sc').querySelectorAll('.drag-item');
-  dragItems.forEach(function(item, i){
-    item.addEventListener('dragstart', function(e){ onDragStart(e, i); });
-    item.addEventListener('dragover',  function(e){ onDragOver(e, i); });
-    item.addEventListener('dragend',   function(e){ onDragEnd(e); });
-    item.addEventListener('drop',      function(e){ onDrop(e, i); });
-  });
+ 
+  attachTouchDrag();
 }
-
+ 
 function setEpMode(mode){ epMode=mode; renderEditPresets(); }
-
+ 
 function getEpItems(){
   var p = epMode.split('-');
   if(p[0]==='strength') return D.presets[p[1]]||[];
@@ -985,14 +979,14 @@ function getEpItems(){
   if(p[0]==='fingerboard') return D.hangs||[];
   return [];
 }
-
+ 
 function setEpItems(items){
   var p = epMode.split('-');
   if(p[0]==='strength') D.presets[p[1]]=items;
   else if(p[0]==='stretch') D.stretchPresets[p[1]]=items;
   else if(p[0]==='fingerboard') D.hangs=items;
 }
-
+ 
 function delEpItem(i){
   var items = getEpItems().slice();
   items.splice(i,1);
@@ -1000,12 +994,12 @@ function delEpItem(i){
   saveData();
   renderEditPresets();
 }
-
+ 
 function saveEpItems(){
   saveData();
   alert('Saved!');
 }
-
+ 
 function addEpItem(){
   var p = epMode.split('-');
   if(p[0]==='fingerboard'){
@@ -1029,40 +1023,81 @@ function addEpItem(){
     setEpItems(items3); saveData(); renderEditPresets();
   }
 }
-
-// ── Drag and drop ──
-var dragSrcIdx = null;
-
-function onDragStart(e, i){
-  dragSrcIdx = i;
-  e.dataTransfer.effectAllowed = 'move';
-  setTimeout(function(){ var el2=document.getElementById('ditem-'+i); if(el2) el2.classList.add('dragging'); },0);
+ 
+// ── Touch-based drag and drop (iOS compatible) ──
+var touchDragIdx = null;
+var touchClone = null;
+var touchOffsetY = 0;
+var touchItems = [];
+ 
+function attachTouchDrag(){
+  touchItems = Array.from(document.querySelectorAll('.drag-item'));
+  touchItems.forEach(function(item, i){
+    var handle = item.querySelector('.drag-handle');
+    if(!handle) return;
+    handle.addEventListener('touchstart', function(e){
+      e.preventDefault();
+      touchDragIdx = i;
+      var touch = e.touches[0];
+      var rect = item.getBoundingClientRect();
+      touchOffsetY = touch.clientY - rect.top;
+      // Create floating clone
+      touchClone = item.cloneNode(true);
+      touchClone.style.cssText = 'position:fixed;left:'+rect.left+'px;top:'+rect.top+'px;width:'+rect.width+'px;opacity:0.85;background:var(--sf);border-radius:var(--rs);border:1.5px solid var(--ac);z-index:9999;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.25);';
+      document.body.appendChild(touchClone);
+      item.style.opacity = '0.3';
+    }, {passive:false});
+ 
+    handle.addEventListener('touchmove', function(e){
+      e.preventDefault();
+      if(touchDragIdx === null || !touchClone) return;
+      var touch = e.touches[0];
+      touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+      // Find which item we're hovering over
+      touchItems.forEach(function(it){ it.classList.remove('drag-over'); });
+      var hoverIdx = getHoverIdx(touch.clientY);
+      if(hoverIdx !== null && hoverIdx !== touchDragIdx){
+        touchItems[hoverIdx].classList.add('drag-over');
+      }
+    }, {passive:false});
+ 
+    handle.addEventListener('touchend', function(e){
+      e.preventDefault();
+      if(touchDragIdx === null) return;
+      var touch = e.changedTouches[0];
+      var dropIdx = getHoverIdx(touch.clientY);
+      // Clean up
+      if(touchClone){ document.body.removeChild(touchClone); touchClone=null; }
+      touchItems.forEach(function(it){ it.style.opacity=''; it.classList.remove('drag-over'); });
+      if(dropIdx !== null && dropIdx !== touchDragIdx){
+        var items = getEpItems().slice();
+        var moved = items.splice(touchDragIdx,1)[0];
+        items.splice(dropIdx,0,moved);
+        setEpItems(items);
+        saveData();
+        renderEditPresets();
+      }
+      touchDragIdx = null;
+    }, {passive:false});
+  });
 }
-function onDragOver(e, i){
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.drag-item').forEach(function(d){ d.classList.remove('drag-over'); });
-  var t=document.getElementById('ditem-'+i); if(t) t.classList.add('drag-over');
+ 
+function getHoverIdx(clientY){
+  var best = null, bestDist = 9999;
+  touchItems.forEach(function(item, i){
+    var rect = item.getBoundingClientRect();
+    var mid = rect.top + rect.height/2;
+    var dist = Math.abs(clientY - mid);
+    if(dist < bestDist){ bestDist=dist; best=i; }
+  });
+  return best;
 }
-function onDragEnd(e){
-  document.querySelectorAll('.drag-item').forEach(function(d){ d.classList.remove('dragging','drag-over'); });
-}
-function onDrop(e, dropIdx){
-  e.preventDefault();
-  if(dragSrcIdx===null || dragSrcIdx===dropIdx) return;
-  var items = getEpItems().slice();
-  var moved = items.splice(dragSrcIdx,1)[0];
-  items.splice(dropIdx,0,moved);
-  setEpItems(items);
-  dragSrcIdx=null;
-  renderEditPresets();
-}
-
+ 
 // ===== INIT
 document.addEventListener('click',function(e){ document.querySelectorAll('.ov').forEach(function(m){ if(e.target===m) m.classList.remove('op'); }); });
 if(D.workouts.length===0) loadDummyData();
 renderHome();
-
+ 
 </script>
 </body>
 </html>
