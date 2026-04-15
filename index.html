@@ -19,7 +19,7 @@
   --tx:#1a1814; --t2:#6b6760; --t3:#a8a49f;
   --ac:#2d5a3d; --al:#e8f0eb;
   --bl:#2d4a7a; --bll:#eaeff8;
-  --pu:#5a3d7a; --rd:#c0392b; --gn:#2d7a4a;
+  --pu:#5a3d7a; --rd:#c0392b; --gn:#2d7a4a; --or:#c4622d;
   --r:14px; --rs:8px;
   --fn:'DM Sans',sans-serif; --mn:'DM Mono',monospace;
   --st:env(safe-area-inset-top,44px); --sb:env(safe-area-inset-bottom,20px);
@@ -153,6 +153,17 @@ select:focus { outline:none; border-color:var(--ac); }
 
 .save-preset-btn { background:var(--bl); color:white; border:none; border-radius:var(--r); font-size:14px; font-weight:600; font-family:var(--fn); padding:12px; width:100%; cursor:pointer; margin-top:8px; }
 .save-preset-btn:active { opacity:.85; }
+
+.ep-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+.ep-tab { padding:8px 12px; border-radius:var(--rs); border:1.5px solid var(--bd); background:var(--sf); font-size:13px; font-weight:600; font-family:var(--fn); color:var(--t2); cursor:pointer; }
+.ep-tab.on { background:var(--ac); color:white; border-color:var(--ac); }
+.drag-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--sf); border:1px solid var(--bd); border-radius:var(--rs); margin-bottom:6px; cursor:grab; transition:opacity .15s, box-shadow .15s; user-select:none; -webkit-user-select:none; }
+.drag-item.dragging { opacity:.4; }
+.drag-item.drag-over { box-shadow:0 -3px 0 var(--ac); }
+.drag-handle { color:var(--t3); font-size:18px; cursor:grab; flex-shrink:0; padding:2px 4px; }
+.drag-name { flex:1; font-size:14px; font-weight:500; }
+.drag-sub { font-size:12px; color:var(--t3); margin-top:2px; }
+.drag-del { width:26px; height:26px; border-radius:50%; border:none; background:#fce8e8; color:var(--rd); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:var(--fn); }
 </style>
 </head>
 <body>
@@ -181,6 +192,7 @@ select:focus { outline:none; border-color:var(--ac); }
 <div class="scr" id="scr-progress"><div class="tb"><div class="tt">Progress</div></div><div class="sc" id="prog-sc"></div></div>
 <div class="scr" id="scr-climbing"><div class="tb"><div class="tt">Climbing Tracker</div></div><div class="sc" id="climb-sc"></div></div>
 <div class="scr" id="scr-settings"><div class="tb"><div class="tt">Settings</div></div><div class="sc" id="sett-sc"></div></div>
+<div class="scr" id="scr-editpresets"><div class="tb" id="ep-topbar"></div><div class="sc" id="ep-sc"></div></div>
 <div class="scr" id="scr-workout"><div class="tb" id="wtb"></div><div class="sc" id="wsc"></div></div>
 
 <div class="tbar">
@@ -857,8 +869,12 @@ function renderSettings(){
     +'<div class="sl">Demo</div><div class="cd">'
     +'<div class="setr" onclick="loadDummyData();renderHome();alert(\'Demo data loaded! Check all tabs.\')"><div style="font-size:20px;width:36px;text-align:center">&#127922;</div><div style="flex:1"><div style="font-size:15px;font-weight:500">Reload demo data</div><div style="font-size:12px;color:var(--t3);margin-top:1px">Reset to sample workouts</div></div><div class="cv">&#8250;</div></div>'
     +'</div>'
+    +'<div class="sl">Manage presets</div><div class="cd">'
+    +'<div class="setr" onclick="showEditPresets()"><div style="font-size:20px;width:36px;text-align:center">&#9998;&#65039;</div><div style="flex:1"><div style="font-size:15px;font-weight:500">Edit &amp; reorder presets</div><div style="font-size:12px;color:var(--t3);margin-top:1px">Strength, Stretching &amp; Fingerboard</div></div><div class="cv">&#8250;</div></div>'
+    +'</div>'
     +'<div class="sl">Danger zone</div><div class="cd">'
-    +'<div class="setr" onclick="doClear()"><div style="font-size:20px;width:36px;text-align:center">&#128465;&#65039;</div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:var(--rd)">Clear all data</div><div style="font-size:12px;color:var(--t3);margin-top:1px">Permanently delete all workouts</div></div><div class="cv">&#8250;</div></div>'
+    +'<div class="setr" onclick="doResetWorkouts()"><div style="font-size:20px;width:36px;text-align:center">&#128203;</div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:var(--or)">Reset workout history</div><div style="font-size:12px;color:var(--t3);margin-top:1px">Deletes all workouts, keeps presets</div></div><div class="cv">&#8250;</div></div>'
+    +'<div class="setr" onclick="doClear()"><div style="font-size:20px;width:36px;text-align:center">&#128465;&#65039;</div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:var(--rd)">Clear all data</div><div style="font-size:12px;color:var(--t3);margin-top:1px">Permanently delete everything</div></div><div class="cv">&#8250;</div></div>'
     +'</div>';
 }
 function doExport(){
@@ -880,10 +896,166 @@ function doImp(){
     alert('Import successful! Added '+added.length+' workout(s).'); renderSettings();
   } catch(e){ alert('Could not read that file.'); }
 }
+function doResetWorkouts(){
+  if(confirm('Delete ALL workout history?\n\nYour presets, stretches and fingerboard exercises will be kept.')){
+    D.workouts=[]; saveData(); renderSettings(); alert('Workout history cleared. Your presets are safe!');
+  }
+}
 function doClear(){
   if(confirm('Delete ALL workout data? This cannot be undone.\n\nExport a backup first if needed.')){
     D=freshData(); saveData(); renderSettings(); alert('All data cleared.');
   }
+}
+
+// ===== EDIT PRESETS SCREEN
+var epMode = 'strength-A'; // current mode
+var epDragIdx = null;
+
+function goToSettings(){ showTab("settings"); }
+function showEditPresets(){
+  document.querySelectorAll('.scr').forEach(function(s){ s.classList.remove('on'); });
+  document.getElementById('scr-editpresets').classList.add('on');
+  epMode = 'strength-A';
+  renderEditPresets();
+}
+
+function renderEditPresets(){
+  var topbar = el('ep-topbar');
+  topbar.innerHTML = '<button class="bk" onclick="goToSettings()">&#8249; Settings</button><div style="text-align:center"><div style="font-size:15px;font-weight:600">Edit Presets</div></div><div style="width:60px"></div>';
+
+  var sections = [
+    {key:'strength-A',lbl:'Strength A'},{key:'strength-B',lbl:'Strength B'},{key:'strength-C',lbl:'Strength C'},
+    {key:'stretch-A',lbl:'Stretch A'},{key:'stretch-B',lbl:'Stretch B'},{key:'stretch-C',lbl:'Stretch C'},
+    {key:'fingerboard',lbl:'Fingerboard'}
+  ];
+
+  var tabsHtml = sections.map(function(s){
+    var cls = 'ep-tab' + (epMode===s.key ? ' on' : '');
+    return '<button class="' + cls + '" data-mode="' + s.key + '">' + s.lbl + '</button>';
+  }).join('');
+
+  var items = getEpItems();
+  var rowsHtml = items.map(function(item, i){
+    var sub = item.hold
+      ? 'Hold ' + item.hold + 's'
+      : item.holdSecs
+        ? item.holdSecs + 's on &middot; ' + item.restSecs + 's off &middot; ' + item.sets + ' sets'
+        : (item.defaultSets||3) + ' sets';
+    return '<div class="drag-item" id="ditem-' + i + '" draggable="true">'
+      + '<div class="drag-handle">&#9776;</div>'
+      + '<div style="flex:1"><div class="drag-name">' + item.name + '</div><div class="drag-sub">' + sub + '</div></div>'
+      + '<button class="drag-del" data-delidx="' + i + '">&#215;</button>'
+      + '</div>';
+  }).join('');
+
+  el('ep-sc').innerHTML = '<div class="ep-tabs" id="ep-tab-row">' + tabsHtml + '</div>'
+    + '<div class="sl" style="margin-top:0">Drag &#9776; to reorder &nbsp;&middot;&nbsp; &#215; to remove</div>'
+    + '<div id="drag-list">' + rowsHtml + '</div>'
+    + '<button class="bs" style="margin-top:8px" id="ep-add-btn">+ Add item</button>'
+    + '<div style="margin-top:12px"><button class="bp" id="ep-save-btn">&#128190; Save changes</button></div>';
+
+  // Attach events after render
+  el('ep-tab-row').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-mode]');
+    if(btn) setEpMode(btn.getAttribute('data-mode'));
+  });
+  el('ep-add-btn').addEventListener('click', addEpItem);
+  el('ep-save-btn').addEventListener('click', saveEpItems);
+
+  var delBtns = el('ep-sc').querySelectorAll('[data-delidx]');
+  delBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){ delEpItem(parseInt(btn.getAttribute('data-delidx'))); });
+  });
+
+  var dragItems = el('ep-sc').querySelectorAll('.drag-item');
+  dragItems.forEach(function(item, i){
+    item.addEventListener('dragstart', function(e){ onDragStart(e, i); });
+    item.addEventListener('dragover',  function(e){ onDragOver(e, i); });
+    item.addEventListener('dragend',   function(e){ onDragEnd(e); });
+    item.addEventListener('drop',      function(e){ onDrop(e, i); });
+  });
+}
+
+function setEpMode(mode){ epMode=mode; renderEditPresets(); }
+
+function getEpItems(){
+  var p = epMode.split('-');
+  if(p[0]==='strength') return D.presets[p[1]]||[];
+  if(p[0]==='stretch') return D.stretchPresets[p[1]]||[];
+  if(p[0]==='fingerboard') return D.hangs||[];
+  return [];
+}
+
+function setEpItems(items){
+  var p = epMode.split('-');
+  if(p[0]==='strength') D.presets[p[1]]=items;
+  else if(p[0]==='stretch') D.stretchPresets[p[1]]=items;
+  else if(p[0]==='fingerboard') D.hangs=items;
+}
+
+function delEpItem(i){
+  var items = getEpItems().slice();
+  items.splice(i,1);
+  setEpItems(items);
+  saveData();
+  renderEditPresets();
+}
+
+function saveEpItems(){
+  saveData();
+  alert('Saved!');
+}
+
+function addEpItem(){
+  var p = epMode.split('-');
+  if(p[0]==='fingerboard'){
+    var name = prompt('Exercise name:');
+    if(!name) return;
+    var items = getEpItems().slice();
+    items.push({id:'ch_'+Date.now(),name:name,holdSecs:7,restSecs:5,sets:5});
+    setEpItems(items); saveData(); renderEditPresets();
+  } else if(p[0]==='stretch'){
+    var name2 = prompt('Stretch name:');
+    if(!name2) return;
+    var hold = parseInt(prompt('Hold time (seconds):')||'30');
+    var items2 = getEpItems().slice();
+    items2.push({id:'cs_'+Date.now(),name:name2,hold:hold||30});
+    setEpItems(items2); saveData(); renderEditPresets();
+  } else {
+    var name3 = prompt('Exercise name:');
+    if(!name3) return;
+    var items3 = getEpItems().slice();
+    items3.push({id:'cx_'+Date.now(),name:name3,defaultSets:3});
+    setEpItems(items3); saveData(); renderEditPresets();
+  }
+}
+
+// ── Drag and drop ──
+var dragSrcIdx = null;
+
+function onDragStart(e, i){
+  dragSrcIdx = i;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(function(){ var el2=document.getElementById('ditem-'+i); if(el2) el2.classList.add('dragging'); },0);
+}
+function onDragOver(e, i){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.drag-item').forEach(function(d){ d.classList.remove('drag-over'); });
+  var t=document.getElementById('ditem-'+i); if(t) t.classList.add('drag-over');
+}
+function onDragEnd(e){
+  document.querySelectorAll('.drag-item').forEach(function(d){ d.classList.remove('dragging','drag-over'); });
+}
+function onDrop(e, dropIdx){
+  e.preventDefault();
+  if(dragSrcIdx===null || dragSrcIdx===dropIdx) return;
+  var items = getEpItems().slice();
+  var moved = items.splice(dragSrcIdx,1)[0];
+  items.splice(dropIdx,0,moved);
+  setEpItems(items);
+  dragSrcIdx=null;
+  renderEditPresets();
 }
 
 // ===== INIT
