@@ -52,7 +52,7 @@ body { font-family:var(--fn); background:var(--bg); color:var(--tx); height:100%
 .bp:active { opacity:.85; }
 .bs { background:var(--sf); color:var(--ac); border:1.5px solid var(--ac); border-radius:var(--r); font-size:14px; font-weight:600; font-family:var(--fn); padding:12px; width:100%; cursor:pointer; margin-top:8px; }
 .bs:active { background:var(--al); }
-.tbar { position:fixed; bottom:0; left:0; right:0; width:100%; max-width:430px; margin:0 auto; background:var(--sf); border-top:1px solid var(--bd); display:flex; padding:8px 0 calc(8px + var(--sb)); z-index:100; }
+.tbar { position:fixed; bottom:10px; left:0; right:0; width:calc(100% - 32px); max-width:398px; margin:0 auto; left:50%; transform:translateX(-50%); background:var(--sf); border:1px solid var(--bd); border-radius:20px; display:flex; padding:8px 0 calc(12px + var(--sb)); z-index:100; bottom:6px; box-shadow:0 2px 16px rgba(0,0,0,0.10); }
 .ti { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:500; color:var(--t3); cursor:pointer; padding:4px 0; }
 .ti.on { color:var(--ac); }
 .tic { font-size:20px; line-height:1; }
@@ -150,6 +150,9 @@ select:focus { outline:none; border-color:var(--ac); }
 
 .home-header { position:relative; display:flex; align-items:center; justify-content:space-between; padding:calc(var(--st) + 8px) 12px 12px 20px; background:var(--sf); border-bottom:1px solid var(--bd); overflow:hidden; }
 .home-mountain { flex-shrink:0; width:52px; height:52px; border-radius:10px; overflow:hidden; opacity:0.95; }
+
+.save-preset-btn { background:var(--bl); color:white; border:none; border-radius:var(--r); font-size:14px; font-weight:600; font-family:var(--fn); padding:12px; width:100%; cursor:pointer; margin-top:8px; }
+.save-preset-btn:active { opacity:.85; }
 </style>
 </head>
 <body>
@@ -260,6 +263,12 @@ function freshData() {
       C:makePresetExercises(DEF_PRESETS.C)
     },
     activePreset:'A',
+    stretchPresets:{
+      A:DEF_STR.map(function(s){ return Object.assign({},s); }),
+      B:[{id:'hip',name:'Hip Flexor',hold:30},{id:'hamstring',name:'Hamstring',hold:30},{id:'quad',name:'Quad Stretch',hold:30},{id:'pigeon',name:'Pigeon Pose',hold:45},{id:'chest',name:'Chest Opener',hold:30}],
+      C:[{id:'child',name:"Child's Pose",hold:60},{id:'cat',name:'Cat-Cow',hold:30},{id:'shoulder',name:'Cross-body Shoulder',hold:20},{id:'hip',name:'Hip Flexor',hold:30},{id:'hamstring',name:'Hamstring',hold:30}]
+    },
+    activeStretchPreset:'A',
     stretches:DEF_STR.map(function(s){ return Object.assign({},s); }),
     hangs:DEF_HG.map(function(h){ return Object.assign({},h); }),
     workouts:[]
@@ -272,7 +281,11 @@ function loadData() {
     var d=JSON.parse(r);
     if(!d.presets) d.presets=freshData().presets;
     if(!d.activePreset) d.activePreset='A';
+    if(!d.stretchPresets) d.stretchPresets={A:DEF_STR.map(function(s){return Object.assign({},s);}),B:[{id:'hip',name:'Hip Flexor',hold:30},{id:'hamstring',name:'Hamstring',hold:30},{id:'quad',name:'Quad Stretch',hold:30},{id:'pigeon',name:'Pigeon Pose',hold:45},{id:'chest',name:'Chest Opener',hold:30}],C:[{id:'child',name:"Child's Pose",hold:60},{id:'cat',name:'Cat-Cow',hold:30},{id:'shoulder',name:'Cross-body Shoulder',hold:20},{id:'hip',name:'Hip Flexor',hold:30},{id:'hamstring',name:'Hamstring',hold:30}]};
+    if(!d.activeStretchPreset) d.activeStretchPreset='A';
     if(!d.stretches) d.stretches=DEF_STR.map(function(s){ return Object.assign({},s); });
+    if(!d.stretchPresets) d.stretchPresets={A:makeStretchPreset(DEF_STRETCH_PRESETS.A),B:makeStretchPreset(DEF_STRETCH_PRESETS.B),C:makeStretchPreset(DEF_STRETCH_PRESETS.C)};
+    if(!d.activeStretchPreset) d.activeStretchPreset='A';
     if(!d.hangs) d.hangs=DEF_HG.map(function(h){ return Object.assign({},h); });
     return d;
   } catch(e){ return freshData(); }
@@ -379,7 +392,7 @@ function startW(type){
     var p=D.activePreset||'A'; AW.presetUsed=p;
     AW.exercises=D.presets[p].map(function(ex){ var last=getLastEx(ex.id); return {id:ex.id,name:ex.name,sets:Array(ex.defaultSets||3).fill(null).map(function(){ return {w:last?last.w:'',r:last?last.r:'',done:false}; })}; });
   } else if(type==='climb'){ AW.routes=[]; AW.routeResults={};
-  } else if(type==='stretch'){ AW.stretchDone={};
+  } else if(type==='stretch'){ AW.stretchDone={}; AW.stretchPreset=D.activeStretchPreset||'A'; AW.stretchPreset=D.activeStretchPreset||'A'; var sp=D.activeStretchPreset||'A'; AW.stretchPreset=sp; D.stretches=D.stretchPresets[sp].map(function(s){ return Object.assign({},s); });
   } else if(type==='fingerboard'){ AW.hangSets={}; AW.hangWeights={};
   } else if(type==='basketball'){ AW.bball={hrs:0,mins:0,gameType:'Pickup'};
   } else if(type==='run'){ AW.dist=''; AW.hours=''; AW.mins=''; AW.secs=''; AW.runType=''; }
@@ -402,23 +415,31 @@ function renderAW(){
 // ===== STRENGTH
 function renderStrength(c){
   var p=AW.presetUsed;
-  var tabs=['A','B','C'].map(function(x){ return '<button class="ptab '+(p===x?'on':'')+'" onclick="switchPreset(\''+x+'\')">Preset '+x+'</button>'; }).join('');
-  var rows=AW.exercises.map(function(ex,ei){
-    var setLines=ex.sets.map(function(s,si){
-      return '<div class="setline '+(s.done?'done-line':'')+'">'
+  var tabs='';
+  ['A','B','C'].forEach(function(x){
+    tabs+='<button class="ptab '+(p===x?'on':'')+'" onclick="switchPreset(\''+x+'\')">Preset '+x+'</button>';
+  });
+  var saveBtn='<div style="display:flex;justify-content:flex-end;margin-bottom:8px">'
+    +'<button onclick="saveStrengthPreset()" style="font-size:12px;font-weight:600;color:var(--ac);background:var(--al);border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:var(--fn)">&#128190; Save to Preset '+p+'</button></div>';
+  var rows='';
+  AW.exercises.forEach(function(ex,ei){
+    var setLines='';
+    ex.sets.forEach(function(s,si){
+      setLines+='<div class="setline '+(s.done?'done-line':'')+'">'
         +'<div class="snum">S'+(si+1)+'</div>'
         +'<input class="si '+(s.done?'':'hi')+'" type="number" inputmode="decimal" value="'+s.w+'" placeholder="lb" onchange="updExSet('+ei+','+si+',\'w\',this.value)">'
         +'<input class="si '+(s.done?'':'hi')+'" type="number" inputmode="numeric" value="'+s.r+'" placeholder="reps" onchange="updExSet('+ei+','+si+',\'r\',this.value)">'
         +'<button class="ck '+(s.done?'on':'')+'" onclick="togExSet('+ei+','+si+')"></button></div>';
-    }).join('');
-    return '<div class="exrow"><div class="exrow-top"><div class="exrow-name">'+ex.name+'</div><button class="del-btn" onclick="delExFromWorkout('+ei+')" title="Remove">&#215;</button></div>'
+    });
+    rows+='<div class="exrow"><div class="exrow-top"><div class="exrow-name">'+ex.name+'</div>'
+      +'<button class="del-btn" onclick="delExFromWorkout('+ei+')" title="Remove">&#215;</button></div>'
       +'<div style="font-size:11px;color:var(--t3);margin-bottom:6px">Weight &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reps</div>'
       +'<div class="exrow-sets">'+setLines+'</div>'
       +'<div class="exrow-footer"><button class="add-set-btn" onclick="addExSet('+ei+')">+ Add set</button>'
       +(ex.sets.length>1?'<button class="rem-set-btn" onclick="remExSet('+ei+')">&#8722; Remove set</button>':'')
       +'</div></div>';
-  }).join('');
-  c.innerHTML='<div class="ptabs">'+tabs+'</div><div class="cd">'+rows+'</div>'
+  });
+  c.innerHTML='<div class="ptabs">'+tabs+'</div>'+saveBtn+'<div class="cd">'+rows+'</div>'
     +'<button class="bs" onclick="el(\'m-ex\').classList.add(\'op\')">+ Add exercise</button>'
     +'<div style="margin-top:16px"><div class="sl">Notes</div><textarea class="nta" placeholder="Optional notes..." onchange="AW.notes=this.value">'+(AW.notes||'')+'</textarea></div>'
     +'<div style="margin-top:12px"><button class="bp" onclick="finW()">Finish Workout</button></div>';
@@ -427,6 +448,12 @@ function switchPreset(p){
   D.activePreset=p; saveData(); AW.presetUsed=p;
   AW.exercises=D.presets[p].map(function(ex){ var last=getLastEx(ex.id); return {id:ex.id,name:ex.name,sets:Array(ex.defaultSets||3).fill(null).map(function(){ return {w:last?last.w:'',r:last?last.r:'',done:false}; })}; });
   renderStrength(el('wsc'));
+}
+function saveStrengthPreset(){
+  var p=AW.presetUsed||D.activePreset||'A';
+  D.presets[p]=AW.exercises.map(function(ex){ return {id:ex.id,name:ex.name,defaultSets:ex.sets.length}; });
+  saveData();
+  alert('Saved to Preset '+p+'!');
 }
 function updExSet(ei,si,f,v){ AW.exercises[ei].sets[si][f]=v; }
 function togExSet(ei,si){ AW.exercises[ei].sets[si].done=!AW.exercises[ei].sets[si].done; renderStrength(el('wsc')); }
@@ -500,29 +527,56 @@ function doAddRt(){ var n=el('nrt-n').value.trim(),g=el('nrt-g').value; if(!AW.r
 
 // ===== STRETCH
 function renderStretch(c){
-  var rows=D.stretches.map(function(s,si){
-    var done=AW.stretchDone[s.id];
-    return '<div class="strrow">'
+  var p=AW.stretchPreset||(AW.stretchPreset=D.activeStretchPreset||'A');
+  if(!D.stretchPresets||!D.stretchPresets[p]){
+    if(!D.stretchPresets) D.stretchPresets={A:[],B:[],C:[]};
+    D.stretchPresets[p]=DEF_STR.map(function(s){ return Object.assign({},s); });
+  }
+  var list=D.stretchPresets[p];
+  var tabs='';
+  ['A','B','C'].forEach(function(x){
+    tabs+='<button class="ptab '+(p===x?'on':'')+'" onclick="switchStretchPreset(\''+x+'\')">Preset '+x+'</button>';
+  });
+  var saveBtn='<div style="display:flex;justify-content:flex-end;margin-bottom:8px">'
+    +'<button onclick="saveStretchPreset()" style="font-size:12px;font-weight:600;color:var(--ac);background:var(--al);border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:var(--fn)">&#128190; Save to Preset '+p+'</button></div>';
+  var rows='';
+  list.forEach(function(s,si){
+    var key=s.id+'_'+si;
+    var done=AW.stretchDone[key];
+    rows+='<div class="strrow">'
       +'<button class="del-btn" onclick="delStretch('+si+')" title="Remove">&#215;</button>'
       +'<div class="strrow-info"><div class="strrow-name">'+s.name+'</div><div class="strrow-hold">Hold '+s.hold+'s each side</div></div>'
-      +'<button class="stc '+(done?'on':'')+'" onclick="togSt(\''+s.id+'\')"></button>'
-      +'</div>';
-  }).join('');
+      +'<button class="stc '+(done?'on':'')+'" onclick="togSt(\''+key+'\')"></button></div>';
+  });
   var dc=Object.values(AW.stretchDone).filter(Boolean).length;
-  c.innerHTML='<div class="sl">Stretches - '+dc+'/'+D.stretches.length+' done</div>'
+  c.innerHTML='<div class="ptabs">'+tabs+'</div>'+saveBtn
+    +'<div style="font-size:11px;color:var(--t3);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:600">Stretches - '+dc+'/'+list.length+' done</div>'
     +'<div class="cd">'+rows+'</div>'
     +'<button class="bs" onclick="el(\'m-st\').classList.add(\'op\')">+ Add stretch</button>'
     +'<div style="margin-top:16px"><div class="sl">Notes</div><textarea class="nta" placeholder="How did your body feel?" onchange="AW.notes=this.value">'+(AW.notes||'')+'</textarea></div>'
     +'<div style="margin-top:12px"><button class="bp" onclick="finW()">Finish Workout</button></div>';
 }
-function togSt(id){ AW.stretchDone[id]=!AW.stretchDone[id]; renderStretch(el('wsc')); }
-function delStretch(si){ D.stretches.splice(si,1); saveData(); renderStretch(el('wsc')); }
+function switchStretchPreset(p){
+  D.activeStretchPreset=p; saveData();
+  AW.stretchPreset=p; AW.stretchDone={};
+  renderStretch(el('wsc'));
+}
+function saveStretchPreset(){
+  var p=AW.stretchPreset||D.activeStretchPreset||'A';
+  saveData();
+  alert('Stretching Preset '+p+' saved!');
+}
+function togSt(key){ AW.stretchDone[key]=!AW.stretchDone[key]; renderStretch(el('wsc')); }
+function delStretch(si){
+  var p=AW.stretchPreset||D.activeStretchPreset||'A';
+  D.stretchPresets[p].splice(si,1); saveData(); renderStretch(el('wsc'));
+}
 function doAddSt(){
   var n=el('nst-n').value.trim(); if(!n) return;
-  D.stretches.push({id:'cs_'+Date.now(),name:n,hold:parseInt(el('nst-h').value)});
+  var p=AW.stretchPreset||D.activeStretchPreset||'A';
+  D.stretchPresets[p].push({id:'cs_'+Date.now(),name:n,hold:parseInt(el('nst-h').value)});
   saveData(); closeModal('m-st'); el('nst-n').value=''; renderStretch(el('wsc'));
 }
-
 // ===== BASKETBALL
 function renderBball(c){
   var b=AW.bball;
@@ -558,15 +612,28 @@ function renderFb(c){
       +(sets.length>1?'<button class="rem-set-btn" onclick="remHangSet('+hi+')">&#8722; Remove set</button>':'')
       +'</div></div>';
   }).join('');
-  c.innerHTML='<div class="cd">'+rows+'</div>'
+  var fbSave='<div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button onclick="saveFbPreset()" style="font-size:12px;font-weight:600;color:var(--ac);background:var(--al);border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:var(--fn)">&#128190; Save exercises</button></div>';
+  c.innerHTML=fbSave+'<div class="cd">'+rows+'</div>'
     +'<button class="bs" onclick="el(\'m-hg\').classList.add(\'op\')">+ Add exercise</button>'
     +'<div style="margin-top:16px"><div class="sl">Notes</div><textarea class="nta" placeholder="Added weight, grip notes..." onchange="AW.notes=this.value">'+(AW.notes||'')+'</textarea></div>'
     +'<div style="margin-top:12px"><button class="bp" onclick="finW()">Finish Workout</button></div>';
+}
+function saveFbPreset(){
+  D.hangs=D.hangs.map(function(h){ return Object.assign({},h); });
+  saveData();
+  alert('Fingerboard preset saved!');
 }
 function togHg(hi,si){ AW.hangSets[D.hangs[hi].id][si]=!AW.hangSets[D.hangs[hi].id][si]; renderFb(el('wsc')); }
 function addHangSet(hi){ AW.hangSets[D.hangs[hi].id].push(false); renderFb(el('wsc')); }
 function remHangSet(hi){ var s=AW.hangSets[D.hangs[hi].id]; if(s.length>1) s.pop(); renderFb(el('wsc')); }
 function delHang(hi){ D.hangs.splice(hi,1); saveData(); renderFb(el('wsc')); }
+function saveFbPreset(){
+  saveData();
+  alert('Fingerboard exercises saved!');
+}
+function saveFbPreset(){
+  saveData(); alert('Fingerboard exercises saved!');
+}
 function doAddHg(){ var n=el('nhg-n').value.trim(); if(!n) return; D.hangs.push({id:'ch_'+Date.now(),name:n,holdSecs:parseInt(el('nhg-h').value),restSecs:parseInt(el('nhg-r').value),sets:parseInt(el('nhg-s').value)}); saveData(); closeModal('m-hg'); el('nhg-n').value=''; renderFb(el('wsc')); }
 
 // ===== FINISH / CANCEL
@@ -586,7 +653,9 @@ function finW(){
     var rts=AW.routes||[],sds=Object.values(AW.routeResults).filter(function(r){ return r.send; }).length;
     lbl='Indoor Climbing'; sum=rts.length+' routes - '+sds+' sends';
   } else if(t==='stretch'){
-    var dc=Object.values(AW.stretchDone).filter(Boolean).length; lbl='Stretching'; sum=dc+' stretches completed';
+    var dc=Object.values(AW.stretchDone).filter(Boolean).length;
+    var sp=AW.stretchPreset||'A';
+    lbl='Stretching (Preset '+sp+')'; sum=dc+' stretches completed';
   } else if(t==='basketball'){
     var b=AW.bball; lbl='Basketball'; var ts2=(b.hrs?b.hrs+'h ':'')+( b.mins?b.mins+'m':''); sum=b.gameType+(ts2?' - '+ts2:'');
   } else if(t==='fingerboard'){
